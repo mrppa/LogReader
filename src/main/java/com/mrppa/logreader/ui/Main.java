@@ -1,270 +1,256 @@
 package com.mrppa.logreader.ui;
 
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.table.DefaultTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mrppa.logreader.reader.Line;
 import com.mrppa.logreader.reader.LineReader;
-import com.mrppa.logreader.reader.Progress;
 
-import net.miginfocom.swing.MigLayout;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
-public class Main {
-
-	private JFrame frame;
-
-	private final JFileChooser fileChooser = new JFileChooser();
-	private LineReader lineReader;
-	private JTable table;
-	private DefaultTableModel model;
+public class Main extends Application {
+	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	private static final int NU_OF_REC = 100;
-	private JTextField searchField;
-	private int fontSize = 20;
-	private JButton btnA, btnA_1;
+	private MenuItem exitApp;
+	private MenuItem openFile;
+	private Stage primaryStage;
+	private File selectedLogFile;
+	private LineReader lineReader;
+	private VBox topContainer;
+	private List<Line> lineList;
+	private List<TextField> fieldList;
+	private Button pageStart;
+	private Button pageEnd;
+	private Button copyBtn;
+	final Clipboard clipboard = Clipboard.getSystemClipboard();
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+		launch(args);
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+		this.primaryStage = primaryStage;
+		BorderPane root = new BorderPane();
+		topContainer = new VBox();
+		MenuBar mainMenu = new MenuBar();
+		ToolBar toolBar = new ToolBar();
+		topContainer.getChildren().add(mainMenu);
+		topContainer.getChildren().add(toolBar);
+		root.setTop(topContainer);
+		topContainer.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+
+		Menu file = new Menu("File");
+		mainMenu.getMenus().add(file);
+
+		openFile = new MenuItem("Open File");
+		file.getItems().add(openFile);
+
+		exitApp = new MenuItem("Exit");
+		file.getItems().add(exitApp);
+
+		pageStart = new Button();
+		pageStart.setText("Start");
+		toolBar.getItems().add(pageStart);
+
+		pageEnd = new Button();
+		pageEnd.setText("End");
+		toolBar.getItems().add(pageEnd);
+
+		Separator separator1 = new Separator();
+		toolBar.getItems().add(separator1);
+
+		TextField searchField = new TextField();
+		toolBar.getItems().add(searchField);
+
+		Button searchPrev = new Button();
+		searchPrev.setText("<");
+		toolBar.getItems().add(searchPrev);
+
+		Button searchNext = new Button();
+		searchNext.setText(">");
+		toolBar.getItems().add(searchNext);
+
+		copyBtn = new Button();
+		copyBtn.setText("Copy");
+		toolBar.getItems().add(copyBtn);
+
+		fieldList = new ArrayList<>();
+		for (int i = 0; i < NU_OF_REC; i++) {
+			TextField tf = new TextField("");
+			tf.setEditable(false);
+			tf.getStyleClass().add("logcontent_textbox");
+			topContainer.getChildren().add(tf);
+			fieldList.add(tf);
+		}
+
+		primaryStage.setTitle("LogViewer");
+		primaryStage.setScene(new Scene(root, 800, 600));
+		primaryStage.show();
+		this.setActions();
+
+	}
+
+	public void setActions() {
+		// Exit Menu
+		this.exitApp.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				System.exit(0);
+			}
+		});
+
+		// Open File Menu
+		this.openFile.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Log File");
+				selectedLogFile = fileChooser.showOpenDialog(primaryStage);
+				LOG.info("FILE FETCHED\t" + selectedLogFile.getAbsolutePath());
 				try {
-					Main window = new Main();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+					lineReader = new LineReader(selectedLogFile.getAbsolutePath(), 1024);
+					lineList = new LinkedList<Line>();
+					Line line = new Line();
+					line.setEndPos(-1);
+					for (int i = 0; i < NU_OF_REC; i++) {
+						line = lineReader.getNextPosition(line.getEndPos() + 1);
+						lineList.add(line);
+					}
+					refreshText();
+				} catch (IOException e) {
+					LOG.error("FILE READ ERROR", e);
 				}
 			}
 		});
-	}
 
-	/**
-	 * Create the application.
-	 */
-	public Main() {
-		initialize();
-	}
+		// Scroll Event
+		primaryStage.getScene().setOnScroll(new EventHandler<ScrollEvent>() {
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 958, 482);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new MigLayout("", "[grow]", "[][410.00,grow][][grow]"));
-
-		model = new DefaultTableModel();
-		table = new JTable(model);
-		model.addColumn(new String[] { "COL1" });
-		model.addColumn(new String[] { "COL2" });
-		model.addColumn(new String[] { "COL3" });
-		table.removeColumn(table.getColumnModel().getColumn(1));
-		table.removeColumn(table.getColumnModel().getColumn(1));
-		table.setShowGrid(false);
-		table.setFont(new Font("Serif", Font.PLAIN, this.fontSize));
-
-		table.addMouseWheelListener(new MouseWheelListener() {
-			public void mouseWheelMoved(MouseWheelEvent arg0) {
-				int notches = arg0.getWheelRotation();
-				if (notches < 0) {
-					System.out.println("Mouse wheel moved UP " + -notches + " notch(es)");
-					Long lastRowEndVal = (Long) model.getValueAt(model.getRowCount() - 1, 2);
-					if (model.getRowCount() > 1) {
-						model.removeRow(0);
-					}
-					try {
-						Line line = lineReader.getNextPosition(lastRowEndVal + 1);
-						if (line != null) {
-							model.addRow(new Object[] { line.getContent(), line.getStartPos(), line.getEndPos() });
-						}
-
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.out.println(lastRowEndVal);
-				} else {
-					System.out.println("Mouse wheel moved DOWN " + -notches + " notch(es)");
-					Long firstRowStartVal = (Long) model.getValueAt(0, 1);
-					if (firstRowStartVal > 0) {
-						if (model.getRowCount() >= NU_OF_REC) {
-							model.removeRow(model.getRowCount() - 1);
-						}
+			@Override
+			public void handle(ScrollEvent event) {
+				if (event.getDeltaY() > 0) {
+					LOG.debug("SCROLLING UP");
+					if (lineList.size() > 1) {
+						Line firstLine = lineList.remove(0);
+						Line lastLine = lineList.get(lineList.size() - 1);
 						try {
-							Line line = lineReader.getPrevPosition(firstRowStartVal - 1);
+							Line line = lineReader.getNextPosition(lastLine.getEndPos() + 1);
 							if (line != null) {
-								model.insertRow(0,
-										new Object[] { line.getContent(), line.getStartPos(), line.getEndPos() });
+								lineList.add(line);
 							}
 
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							LOG.error("ERROR SCROLLING UP");
 						}
-					}
-				}
-			}
-		});
-
-		JToolBar toolBar_nav = new JToolBar();
-		frame.getContentPane().add(toolBar_nav, "flowx,cell 0 0");
-
-		JButton btnStart = new JButton("Start");
-		btnStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					loadTableFromTop(-1);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		toolBar_nav.add(btnStart);
-
-		JButton btnGoToEnd = new JButton("End");
-		toolBar_nav.add(btnGoToEnd);
-		btnGoToEnd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					Line line = lineReader.getNearestPrevLine(lineReader.getNuOfBytes() - 1);
-					loadTableFromBottom(line.getEndPos() + 1);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-
-		JSeparator separator = new JSeparator();
-		toolBar_nav.add(separator);
-
-		frame.getContentPane().add(table, "cell 0 1 1 3,grow");
-
-		JToolBar toolBar_Search = new JToolBar();
-		frame.getContentPane().add(toolBar_Search, "cell 0 0");
-
-		searchField = new JTextField();
-		toolBar_Search.add(searchField);
-		searchField.setColumns(10);
-
-		JButton btnSrchTop = new JButton("<");
-		toolBar_Search.add(btnSrchTop);
-
-		JButton btnSrchDown = new JButton(">");
-		toolBar_Search.add(btnSrchDown);
-
-		JToolBar toolBar_font = new JToolBar();
-		frame.getContentPane().add(toolBar_font, "cell 0 0");
-
-		btnA = new JButton("A+");
-		btnA.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				fontSize++;
-				table.setFont(new Font("Serif", Font.PLAIN, fontSize));
-				btnA_1.setEnabled(true);
-				if (fontSize > 30) {
-					btnA.setEnabled(false);
-				}
-			}
-		});
-		toolBar_font.add(btnA);
-
-		btnA_1 = new JButton("A-");
-		btnA_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				fontSize--;
-				table.setFont(new Font("Serif", Font.PLAIN, fontSize));
-				btnA.setEnabled(true);
-				if (fontSize < 5) {
-					btnA_1.setEnabled(false);
-				}
-			}
-		});
-		toolBar_font.add(btnA);
-
-		toolBar_font.add(btnA_1);
-		btnSrchDown.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					Long firstRowStartVal = (Long) model.getValueAt(0, 1);
-					long searchRes = lineReader.getCachedLogReader().searchNextItem(searchField.getText(),
-							firstRowStartVal, new Progress());
-					Line line = lineReader.getNearestPrevLine(searchRes);
-					loadTableFromTop(line.getStartPos() - 1);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		btnSrchTop.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-
-		JMenu mnFile = new JMenu("File");
-		menuBar.add(mnFile);
-
-		JMenuItem mntmOpen = new JMenuItem("Open");
-		mntmOpen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int returnVal = fileChooser.showOpenDialog(null);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					try {
-
-						lineReader = new LineReader(file.getAbsolutePath(), 1024);
-						loadTableFromTop(-1);
-					} catch (IOException ex) {
-						System.out.println("problem accessing file" + file.getAbsolutePath());
+						refreshText();
 					}
 				} else {
-					System.out.println("File access cancelled by user.");
+					LOG.debug("SCROLLING DOWN");
+					Line firstLine = lineList.get(0);
+					try {
+						Line line = lineReader.getPrevPosition(firstLine.getStartPos() - 1);
+						if (line != null) {
+							lineList.add(0, line);
+							if (lineList.size() > fieldList.size()) {
+								Line lastLine = lineList.remove(lineList.size() - 1);
+							}
+						}
+
+					} catch (IOException e) {
+						LOG.error("ERROR SCROLLING UP");
+					}
+					refreshText();
+				}
+
+			}
+		});
+
+		// Start Nav Button
+		this.pageStart.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					lineList.clear();
+					Line line = new Line();
+					line.setEndPos(-1);
+					for (int i = 0; i < NU_OF_REC; i++) {
+						line = lineReader.getNextPosition(line.getEndPos() + 1);
+						lineList.add(line);
+					}
+					refreshText();
+				} catch (IOException e) {
+					LOG.error("FILE READ ERROR", e);
 				}
 			}
 		});
-		mnFile.add(mntmOpen);
+
+		// End Nav Button
+		this.pageEnd.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					lineList.clear();
+					Line line1 = lineReader.getNearestPrevLine(lineReader.getNuOfBytes() - 1);
+					lineList.add(line1);
+					refreshText();
+				} catch (IOException e) {
+					LOG.error("FILE READ ERROR", e);
+				}
+			}
+		});
+
+		// Copy Button
+		this.copyBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				StringBuilder sb = new StringBuilder();
+				for (Line line : lineList) {
+					sb.append(line.getContent());
+				}
+				ClipboardContent content = new ClipboardContent();
+				content.putString(sb.toString());
+				clipboard.setContent(content);
+			}
+		});
+
 	}
 
-	private void loadTableFromTop(long startingPos) throws IOException {
-		model.setRowCount(0);
-		Line line = new Line();
-		line.setEndPos(startingPos);
-		for (int i = 0; i < NU_OF_REC; i++) {
-			line = lineReader.getNextPosition(line.getEndPos() + 1);
-			model.addRow(new Object[] { line.getContent(), line.getStartPos(), line.getEndPos() });
-		}
-	}
-
-	private void loadTableFromBottom(long endPos) throws IOException {
-		model.setRowCount(0);
-		Line line = new Line();
-		line.setStartPos(endPos);
-		for (int i = 0; i < NU_OF_REC; i++) {
-			line = lineReader.getPrevPosition(line.getStartPos() - 1);
-			model.insertRow(0, new Object[] { line.getContent(), line.getStartPos(), line.getEndPos() });
+	private void refreshText() {
+		for (int i = 0; i < fieldList.size(); i++) {
+			TextField tf = fieldList.get(i);
+			if (i >= lineList.size()) {
+				tf.setText("");
+			} else {
+				Line line = lineList.get(i);
+				if (line != null) {
+					tf.setText(line.getContent());
+				}
+			}
 		}
 	}
 

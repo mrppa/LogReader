@@ -1,9 +1,20 @@
 package com.mrppa.logreader.reader;
 
 public class Line {
+	private String content;
 	private long startPos;
 	private long endPos;
-	private String content;
+
+	public Line() {
+		super();
+	}
+
+	public Line(String content, long startPos, long endPos) {
+		super();
+		this.content = content;
+		this.startPos = startPos;
+		this.endPos = endPos;
+	}
 
 	public long getStartPos() {
 		return startPos;
@@ -28,4 +39,5 @@ public class Line {
 	public void setContent(String content) {
 		this.content = content;
 	}
+
 }
