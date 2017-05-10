@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language JavaScript?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="vbox" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"  fx:controller="com.mrppa.logreader.ui.SearchController">
+  <children>
+    <Label fx:id="searchInfo" alignment="CENTER_LEFT" cache="true" cacheHint="SCALE" text="SearchResults" textAlignment="LEFT" />
+   	<ListView fx:id="searchList" />
+  </children>
+</VBox>

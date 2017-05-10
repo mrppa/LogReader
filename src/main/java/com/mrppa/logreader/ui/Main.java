@@ -15,6 +15,7 @@ import com.mrppa.logreader.reader.LineReader;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
@@ -33,7 +34,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
-	private static final int NU_OF_REC = 100;
+	private static final int NU_OF_REC = 40;
 	private MenuItem exitApp;
 	private MenuItem openFile;
 	private Stage primaryStage;
@@ -45,7 +46,19 @@ public class Main extends Application {
 	private Button pageStart;
 	private Button pageEnd;
 	private Button copyBtn;
+	private Button btnSearch;
+	private Stage searchResultStage;
+	private TextField searchField;
+
 	final Clipboard clipboard = Clipboard.getSystemClipboard();
+
+	protected LineReader getLineReader() {
+		return lineReader;
+	}
+
+	protected void setLineReader(LineReader lineReader) {
+		this.lineReader = lineReader;
+	}
 
 	public static void main(String[] args) {
 		launch(args);
@@ -84,17 +97,16 @@ public class Main extends Application {
 		Separator separator1 = new Separator();
 		toolBar.getItems().add(separator1);
 
-		TextField searchField = new TextField();
+		searchField = new TextField();
 		toolBar.getItems().add(searchField);
 
-		Button searchPrev = new Button();
-		searchPrev.setText("<");
-		toolBar.getItems().add(searchPrev);
+		btnSearch = new Button();
+		btnSearch.setText("Search");
+		toolBar.getItems().add(btnSearch);
 
-		Button searchNext = new Button();
-		searchNext.setText(">");
-		toolBar.getItems().add(searchNext);
-
+		Separator separator2 = new Separator();
+		toolBar.getItems().add(separator2);
+		
 		copyBtn = new Button();
 		copyBtn.setText("Copy");
 		toolBar.getItems().add(copyBtn);
@@ -238,6 +250,33 @@ public class Main extends Application {
 			}
 		});
 
+		// Search Button
+		this.btnSearch.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				FXMLLoader fxmlLoader = new FXMLLoader();
+				fxmlLoader.setLocation(getClass().getResource("/SearchResult.fxml"));
+
+				VBox vbox = null;
+				try {
+					vbox = fxmlLoader.load();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				SearchController searchController = fxmlLoader.getController();
+				searchController.setSearchString(searchField.getText());
+				searchController.setLineReader(lineReader);
+				searchController.setMain(Main.this);
+				searchController.search();
+
+				searchResultStage = new Stage();
+				searchResultStage.setScene(new Scene(vbox, 800, 500));
+				searchResultStage.setTitle("SearchResult");
+				searchResultStage.show();
+
+			}
+		});
+
 	}
 
 	private void refreshText() {
@@ -251,6 +290,25 @@ public class Main extends Application {
 					tf.setText(line.getContent());
 				}
 			}
+		}
+	}
+
+	protected synchronized void goAbsolutePosition(Long position) {
+		try {
+			lineList.clear();
+			Line line = new Line();
+			line = lineReader.getNearestPrevLine(position - 1);
+			for (int i = 0; i < NU_OF_REC; i++) {
+				line = lineReader.getNextPosition(line.getEndPos() +1);
+				if(line ==null)
+				{
+					break;
+				}
+				lineList.add(line);
+			}
+			refreshText();
+		} catch (IOException e) {
+			LOG.error("FILE READ ERROR", e);
 		}
 	}
 
