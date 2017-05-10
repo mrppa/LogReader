@@ -8,17 +8,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import com.mrppa.logreader.reader.Line;
 import com.mrppa.logreader.reader.LineReader;
 import com.mrppa.logreader.reader.Progress;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
 
 public class SearchController implements Initializable {
@@ -32,7 +29,7 @@ public class SearchController implements Initializable {
 
 	private LineReader lineReader;
 
-	private Main main;
+	private MainController mainController;
 
 	protected Label getSearchInfo() {
 		return searchInfo;
@@ -66,23 +63,23 @@ public class SearchController implements Initializable {
 		this.lineReader = lineReader;
 	}
 
-	protected Main getMain() {
-		return main;
+	public MainController getMainController() {
+		return mainController;
 	}
 
-	protected void setMain(Main main) {
-		this.main = main;
+	public void setMainController(MainController mainController) {
+		this.mainController = mainController;
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		searchInfo.setText("Loading");
-		this.searchList.setOnMouseClicked(new EventHandler<MouseEvent>(){
+		this.searchList.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				Long item=Long.parseLong(searchList.getSelectionModel().getSelectedItem());
+				Long item = Long.parseLong(searchList.getSelectionModel().getSelectedItem());
 				System.out.println("clicked on " + item);
-				main.goAbsolutePosition(item);
+				mainController.loadLinesFromPos(item);
 			}
 
 		});
@@ -98,7 +95,7 @@ public class SearchController implements Initializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		searchInfo.setText(resultSet.size() + " records found for search test " + searchString);
+		searchInfo.setText(resultSet.size() + " records found for search text \t:" + searchString);
 
 		List<Long> searchListObj = new LinkedList<>();
 		for (Long resultItem : resultSet) {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.textfield.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane fx:controller="com.mrppa.logreader.ui.MainController"
+	xmlns:fx="http://javafx.com/fxml" prefHeight="200" prefWidth="320">
+	<top>
+		<VBox>
+			<MenuBar>
+				<Menu text="File">
+					<MenuItem fx:id="openFileMnuItem" text="Open"></MenuItem>
+					<MenuItem fx:id="exitFileMnuItem" text="Exit"></MenuItem>
+				</Menu>
+			</MenuBar>
+			<ToolBar>
+				<Button fx:id="pageStartBtn" text="Start"></Button>
+				<Button fx:id="pageEndBtn" text="End"></Button>
+				<Separator></Separator>
+				<TextField fx:id="searchTxtField"></TextField>
+				<Button fx:id="searchBtn" text="Search"></Button>
+				<Separator></Separator>
+				<Button fx:id="copyBtn" text="Copy"></Button>
+			</ToolBar>
+			<VBox fx:id="textDispArea">
+				
+			</VBox>
+
+		</VBox>
+	</top>
+
+</BorderPane>
