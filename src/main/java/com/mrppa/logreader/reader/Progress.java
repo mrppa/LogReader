@@ -4,8 +4,9 @@ public class Progress {
 	private long value;
 	private long minVal;
 	private long maxVal;
+	private boolean shutDownCommand=false;
 
-	protected long getValue() {
+	public long getValue() {
 		return value;
 	}
 
@@ -13,7 +14,7 @@ public class Progress {
 		this.value = value;
 	}
 
-	protected long getMinVal() {
+	public long getMinVal() {
 		return minVal;
 	}
 
@@ -21,12 +22,20 @@ public class Progress {
 		this.minVal = minVal;
 	}
 
-	protected long getMaxVal() {
+	public long getMaxVal() {
 		return maxVal;
 	}
 
 	protected void setMaxVal(long maxVal) {
 		this.maxVal = maxVal;
+	}
+
+	public boolean isShutDownCommand() {
+		return shutDownCommand;
+	}
+
+	public void setShutDownCommand(boolean shutDownCommand) {
+		this.shutDownCommand = shutDownCommand;
 	}
 
 	public int getProgress() {

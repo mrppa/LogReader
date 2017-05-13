@@ -36,9 +36,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class MainController implements Initializable {
 
@@ -74,6 +76,8 @@ public class MainController implements Initializable {
 
 	private File selectedLogFile;
 	private LineReader lineReader;
+
+	private Timer sysStatTimer;
 
 	public MenuItem getOpenFileMnuItem() {
 		return openFileMnuItem;
@@ -165,8 +169,8 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		UIData uiData=new UIData();
-		
+		UIData uiData = new UIData();
+
 		this.populateTextDispArea();
 		searchBtn.setDisable(true);
 		textDispArea.setDisable(true);
@@ -174,24 +178,23 @@ public class MainController implements Initializable {
 		searchTxtField.setDisable(true);
 		pageStartBtn.setDisable(true);
 		pageEndBtn.setDisable(true);
-		
-		TimerTask sysStatTimer=new TimerTask() {
+
+		TimerTask sysStatTimerTask = new TimerTask() {
 			@Override
 			public void run() {
 				Platform.runLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						sysStatLbl.setText(uiData.getStstemBarStat());
-						
+
 					}
 				});
-				
-				
+
 			}
 		};
-		Timer timer=new Timer();
-		timer.scheduleAtFixedRate(sysStatTimer,0 , 5000);
+		sysStatTimer = new Timer();
+		sysStatTimer.scheduleAtFixedRate(sysStatTimerTask, 0, 5000);
 	}
 
 	/**
@@ -216,7 +219,7 @@ public class MainController implements Initializable {
 		this.exitFileMnuItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				System.exit(0);
+				Platform.exit();
 			}
 		});
 
@@ -328,9 +331,9 @@ public class MainController implements Initializable {
 				FXMLLoader fxmlLoader = new FXMLLoader();
 				fxmlLoader.setLocation(getClass().getResource("/SearchResult.fxml"));
 
-				VBox vbox = null;
+				Pane searchPane = null;
 				try {
-					vbox = fxmlLoader.load();
+					searchPane = fxmlLoader.load();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -338,12 +341,18 @@ public class MainController implements Initializable {
 				searchController.setSearchString(searchTxtField.getText());
 				searchController.setLineReader(lineReader);
 				searchController.setMainController(MainController.this);
-				searchController.search();
 
 				Stage searchResultStage = new Stage();
-				searchResultStage.setScene(new Scene(vbox, 800, 500));
+				searchResultStage.setScene(new Scene(searchPane, 800, 500));
 				searchResultStage.setTitle("SearchResult");
 				searchResultStage.show();
+				searchResultStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					public void handle(WindowEvent we) {
+						LOG.info("SEARCH WINDOW CLOSING");
+						searchController.finalize();
+					}
+				});
+				searchController.search();
 
 			}
 		});
@@ -422,6 +431,13 @@ public class MainController implements Initializable {
 			refreshText();
 		} catch (IOException e) {
 			LOG.error("FILE READ ERROR", e);
+		}
+	}
+
+	public void finalize() {
+		LOG.info("FINALIZING MAIN CONTROLLER");
+		if (this.sysStatTimer != null) {
+			this.sysStatTimer.cancel();
 		}
 	}
 

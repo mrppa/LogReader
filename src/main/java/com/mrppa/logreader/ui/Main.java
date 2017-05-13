@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+	private MainController mainController ;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -25,7 +26,7 @@ public class Main extends Application {
 		fxmlLoader.setLocation(getClass().getResource("/main.fxml"));
 
 		Pane pane = fxmlLoader.load();
-		MainController mainController = fxmlLoader.getController();
+		mainController = fxmlLoader.getController();
 
 		primaryStage = new Stage();
 		mainController.setStage(primaryStage);
@@ -37,5 +38,12 @@ public class Main extends Application {
 		primaryStage.show();
 		mainController.setActions();
 
+	}
+
+	@Override
+	public void stop() throws Exception {
+		if(mainController!=null){
+			mainController.finalize();
+		}
 	}
 }

@@ -7,10 +7,10 @@
 		</layout>
 	</appender>
 
-	<logger name="com.mrppa" level="debug" />
+	<logger name="com.mrppa" level="info" />
 
 
-	<root level="debug">
+	<root level="info">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

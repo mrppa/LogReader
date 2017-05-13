@@ -66,11 +66,11 @@ public class LogReader {
 	public byte[] loadChunk(long chunkNo) throws IOException {
 		LOG.debug("LOAD CHUNK \t:" + chunkNo);
 		long pos = this.chunkSize * chunkNo;
-		LOG.info("POSITION SEEK\t:" + pos);
+		LOG.debug("POSITION SEEK\t:" + pos);
 		this.randomAccessFile.seek(pos);
 		byte[] bytes = new byte[this.chunkSize];
 		int nuOfBytesRead = this.randomAccessFile.read(bytes);
-		LOG.info("BYTES READ COUNT\t:" + nuOfBytesRead);
+		LOG.debug("BYTES READ COUNT\t:" + nuOfBytesRead);
 		if (nuOfBytesRead == -1) {
 			return null;
 		} else if (nuOfBytesRead != this.chunkSize) {
@@ -160,7 +160,10 @@ public class LogReader {
 				}
 				prevChunkData = chunkdata;
 			}
-
+			if(progress.isShutDownCommand())
+			{
+				throw new IOException("THREAD SHUTDOWN REQUESTED");
+			}
 		}
 		progress.setValue(progress.getMaxVal());
 		return searchResults;
