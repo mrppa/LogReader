@@ -1,3 +1,7 @@
 .logcontent_textbox {
 	-fx-text-box-border: transparent;
+	-fx-background-color: transparent;
+}
+.TextDispArea {
+	-fx-background-color: #FFFFFF;
 }

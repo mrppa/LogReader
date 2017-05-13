@@ -113,10 +113,4 @@ public class CachedLogReader extends LogReader {
 		}
 		return result;
 	}
-
-	@Override
-	public Long searchNextItem(String searchStr, long startAbsolutePosition, Progress progress) throws IOException {
-		return super.searchNextItem(searchStr, startAbsolutePosition, progress);
-	}
-
 }

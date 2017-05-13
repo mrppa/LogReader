@@ -109,21 +109,4 @@ public class LogReaderTest {
 		assertEquals(10000, searchRes.size());
 	}
 
-	@Test
-	public void testSearchNext() throws IOException {
-		String filePath = testFile1;
-		String searchString = "LINE";
-		LogReader logReader = new LogReader(filePath, 1024);
-		Progress progress = new Progress();
-		Long searchRes = logReader.searchNextItem(searchString, 0l, progress);
-
-		RandomAccessFile randomAccessFile = new RandomAccessFile(new File(filePath), "r");
-		randomAccessFile.seek(searchRes);
-		byte[] res = new byte[searchString.length()];
-		randomAccessFile.read(res);
-		System.out.println(new String(res));
-
-		assertEquals(new String(res), searchString);
-	}
-
 }

@@ -15,31 +15,35 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
 
-<BorderPane fx:controller="com.mrppa.logreader.ui.MainController"
-	xmlns:fx="http://javafx.com/fxml" prefHeight="200" prefWidth="320">
-	<top>
-		<VBox>
-			<MenuBar>
-				<Menu text="File">
-					<MenuItem fx:id="openFileMnuItem" text="Open"></MenuItem>
-					<MenuItem fx:id="exitFileMnuItem" text="Exit"></MenuItem>
-				</Menu>
-			</MenuBar>
-			<ToolBar>
-				<Button fx:id="pageStartBtn" text="Start"></Button>
-				<Button fx:id="pageEndBtn" text="End"></Button>
-				<Separator></Separator>
-				<TextField fx:id="searchTxtField"></TextField>
-				<Button fx:id="searchBtn" text="Search"></Button>
-				<Separator></Separator>
-				<Button fx:id="copyBtn" text="Copy"></Button>
-			</ToolBar>
-			<VBox fx:id="textDispArea">
-				
-			</VBox>
+<AnchorPane fx:controller="com.mrppa.logreader.ui.controller.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="200" prefWidth="400">
+	<VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+		<MenuBar>
+			<Menu text="File">
+				<MenuItem fx:id="openFileMnuItem" text="Open"></MenuItem>
+				<MenuItem fx:id="exitFileMnuItem" text="Exit"></MenuItem>
+			</Menu>
+		</MenuBar>
+		<ToolBar>
+			<Button fx:id="pageStartBtn" text="Start"></Button>
+			<Button fx:id="pageEndBtn" text="End"></Button>
+			<Separator></Separator>
+			<TextField fx:id="searchTxtField"></TextField>
+			<Button fx:id="searchBtn" text="Search"></Button>
+			<Separator></Separator>
+			<Button fx:id="copyBtn" text="Copy"></Button>
+			<Hyperlink fx:id="linktoSite" text="https://github.com/mrppa/LogReader"
+				underline="true"></Hyperlink>
+		</ToolBar>
+		<VBox fx:id="textDispArea" styleClass="TextDispArea">
 
 		</VBox>
-	</top>
-
-</BorderPane>
+	</VBox>
+	<VBox  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+		<ToolBar >
+				<Label fx:id="sysStatLbl" text=""></Label>
+		</ToolBar>
+	</VBox>
+</AnchorPane>

@@ -1,4 +1,4 @@
-package com.mrppa.logreader.ui;
+package com.mrppa.logreader.ui.controller;
 
 import java.io.IOException;
 import java.net.URL;

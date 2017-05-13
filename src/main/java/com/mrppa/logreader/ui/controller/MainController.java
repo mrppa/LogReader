@@ -1,19 +1,27 @@
-package com.mrppa.logreader.ui;
+package com.mrppa.logreader.ui.controller;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mrppa.logreader.reader.Line;
 import com.mrppa.logreader.reader.LineReader;
+import com.mrppa.logreader.ui.data.UIData;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +29,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
@@ -52,6 +62,10 @@ public class MainController implements Initializable {
 	private Button copyBtn;
 	@FXML
 	private VBox textDispArea;
+	@FXML
+	private Hyperlink linktoSite;
+	@FXML
+	private Label sysStatLbl;
 
 	private Stage stage;
 
@@ -133,9 +147,51 @@ public class MainController implements Initializable {
 		this.stage = stage;
 	}
 
+	public Hyperlink getLinktoSite() {
+		return linktoSite;
+	}
+
+	public void setLinktoSite(Hyperlink linktoSite) {
+		this.linktoSite = linktoSite;
+	}
+
+	public Label getSysStatLbl() {
+		return sysStatLbl;
+	}
+
+	public void setSysStatLbl(Label sysStatLbl) {
+		this.sysStatLbl = sysStatLbl;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		UIData uiData=new UIData();
+		
 		this.populateTextDispArea();
+		searchBtn.setDisable(true);
+		textDispArea.setDisable(true);
+		copyBtn.setDisable(true);
+		searchTxtField.setDisable(true);
+		pageStartBtn.setDisable(true);
+		pageEndBtn.setDisable(true);
+		
+		TimerTask sysStatTimer=new TimerTask() {
+			@Override
+			public void run() {
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						sysStatLbl.setText(uiData.getStstemBarStat());
+						
+					}
+				});
+				
+				
+			}
+		};
+		Timer timer=new Timer();
+		timer.scheduleAtFixedRate(sysStatTimer,0 , 5000);
 	}
 
 	/**
@@ -155,7 +211,7 @@ public class MainController implements Initializable {
 	/**
 	 * Set the action of each components
 	 */
-	protected void setActions() {
+	public void setActions() {
 		// Exit Menu
 		this.exitFileMnuItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -174,9 +230,16 @@ public class MainController implements Initializable {
 				LOG.info("FILE FETCHED\t" + selectedLogFile.getAbsolutePath());
 				try {
 					MainController.this.lineReader = new LineReader(selectedLogFile.getAbsolutePath(), 1024);
-					lineList = new LinkedList<Line>();
+					MainController.this.lineList = new LinkedList<Line>();
 					MainController.this.loadLinesFromPos(0);
 					MainController.this.refreshText();
+					MainController.this.textDispArea.setDisable(false);
+					MainController.this.copyBtn.setDisable(false);
+					MainController.this.searchTxtField.setDisable(false);
+					MainController.this.pageStartBtn.setDisable(false);
+					MainController.this.pageEndBtn.setDisable(false);
+					MainController.this.searchTxtField.setText("");
+
 				} catch (IOException e) {
 					LOG.error("FILE READ ERROR", e);
 				}
@@ -188,15 +251,33 @@ public class MainController implements Initializable {
 
 			@Override
 			public void handle(ScrollEvent event) {
-				if (event.getDeltaY() > 0) {
-					LOG.debug("SCROLLING UP");
-					if (lineList.size() > 1) {
-						lineList.remove(0);
-						Line lastLine = lineList.get(lineList.size() - 1);
+				if (selectedLogFile != null) {
+					if (event.getDeltaY() > 0) {
+						LOG.debug("SCROLLING UP");
+						if (lineList.size() > 1) {
+							lineList.remove(0);
+							Line lastLine = lineList.get(lineList.size() - 1);
+							try {
+								Line line = lineReader.getNextPosition(lastLine.getEndPos() + 1);
+								if (line != null) {
+									lineList.add(line);
+								}
+
+							} catch (IOException e) {
+								LOG.error("ERROR SCROLLING UP");
+							}
+							refreshText();
+						}
+					} else {
+						LOG.debug("SCROLLING DOWN");
+						Line firstLine = lineList.get(0);
 						try {
-							Line line = lineReader.getNextPosition(lastLine.getEndPos() + 1);
+							Line line = lineReader.getPrevPosition(firstLine.getStartPos() - 1);
 							if (line != null) {
-								lineList.add(line);
+								lineList.add(0, line);
+								if (lineList.size() > fieldList.size()) {
+									lineList.remove(lineList.size() - 1);
+								}
 							}
 
 						} catch (IOException e) {
@@ -204,24 +285,7 @@ public class MainController implements Initializable {
 						}
 						refreshText();
 					}
-				} else {
-					LOG.debug("SCROLLING DOWN");
-					Line firstLine = lineList.get(0);
-					try {
-						Line line = lineReader.getPrevPosition(firstLine.getStartPos() - 1);
-						if (line != null) {
-							lineList.add(0, line);
-							if (lineList.size() > fieldList.size()) {
-								lineList.remove(lineList.size() - 1);
-							}
-						}
-
-					} catch (IOException e) {
-						LOG.error("ERROR SCROLLING UP");
-					}
-					refreshText();
 				}
-
 			}
 		});
 
@@ -280,6 +344,36 @@ public class MainController implements Initializable {
 				searchResultStage.setScene(new Scene(vbox, 800, 500));
 				searchResultStage.setTitle("SearchResult");
 				searchResultStage.show();
+
+			}
+		});
+
+		this.searchTxtField.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (MainController.this.searchTxtField.getText().trim().length() > 0) {
+					searchBtn.setDisable(false);
+				} else {
+					searchBtn.setDisable(true);
+
+				}
+
+			}
+		});
+
+		// Clicking the link
+		this.linktoSite.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					Desktop.getDesktop().browse(new URL("https://github.com/mrppa/LogReader").toURI());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 
 			}
 		});
