@@ -27,6 +27,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -42,6 +44,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 public class MainController implements Initializable {
@@ -54,6 +57,8 @@ public class MainController implements Initializable {
 	private MenuItem openFileMnuItem;
 	@FXML
 	private MenuItem exitFileMnuItem;
+	@FXML
+	private MenuItem abtMnuItem;
 	@FXML
 	private Button pageStartBtn;
 	@FXML
@@ -214,6 +219,14 @@ public class MainController implements Initializable {
 		this.navSlider = navSlider;
 	}
 
+	public MenuItem getAbtMnuItem() {
+		return abtMnuItem;
+	}
+
+	public void setAbtMnuItem(MenuItem abtMnuItem) {
+		this.abtMnuItem = abtMnuItem;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		searchBtn.setDisable(true);
@@ -285,6 +298,28 @@ public class MainController implements Initializable {
 				}
 			}
 		});
+		
+		// About Menu
+		this.abtMnuItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				FXMLLoader fxmlLoader = new FXMLLoader();
+				fxmlLoader.setLocation(getClass().getResource("/fxml/about.fxml"));
+
+				Pane aboutPane = null;
+				try {
+					aboutPane = fxmlLoader.load();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				Stage aboutStage = new Stage();
+				aboutStage.setScene(new Scene(aboutPane));
+				aboutStage.getScene().getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+				aboutStage.setTitle("About");
+				aboutStage.initStyle(StageStyle.UTILITY);
+				aboutStage.showAndWait();
+			}
+		});
 
 		// Scroll Event
 		this.stage.getScene().setOnScroll(new EventHandler<ScrollEvent>() {
@@ -345,7 +380,7 @@ public class MainController implements Initializable {
 			@Override
 			public void handle(ActionEvent event) {
 				FXMLLoader fxmlLoader = new FXMLLoader();
-				fxmlLoader.setLocation(getClass().getResource("/SearchResult.fxml"));
+				fxmlLoader.setLocation(getClass().getResource("/fxml/SearchResult.fxml"));
 
 				Pane searchPane = null;
 				try {
@@ -361,6 +396,7 @@ public class MainController implements Initializable {
 				Stage searchResultStage = new Stage();
 				searchResultStage.setScene(new Scene(searchPane, 800, 500));
 				searchResultStage.setTitle("SearchResult");
+				searchResultStage.initStyle(StageStyle.UTILITY);
 				searchResultStage.show();
 				searchResultStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 					public void handle(WindowEvent we) {
@@ -408,7 +444,7 @@ public class MainController implements Initializable {
 
 			@Override
 			public void handle(MouseEvent event) {
-				long selPos =(long) MainController.this.getNavSlider().getValue();
+				long selPos =(long) MainController.this.getNavSlider().getValue()-1;//Avoid last position to be end of file
 				LOG.info("POS CHANGED\t" + selPos);
 				uiData.loadLinesFromPos(selPos, MainController.this.getLineList(), MainController.this.getLineReader(),
 						MainController.NU_OF_REC);

@@ -10,6 +10,7 @@ import com.mrppa.logreader.ui.data.UIData;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -26,7 +27,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader fxmlLoader = new FXMLLoader();
-		fxmlLoader.setLocation(getClass().getResource("/main.fxml"));
+		fxmlLoader.setLocation(getClass().getResource("/fxml/main.fxml"));
 
 		Pane pane = fxmlLoader.load();
 		mainController = fxmlLoader.getController();
@@ -42,7 +43,8 @@ public class Main extends Application {
 		mainController.setUiData(uiData);
 		
 		primaryStage.setScene(new Scene(pane, 800, 500));
-		primaryStage.getScene().getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+		primaryStage.getScene().getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+		primaryStage.getIcons().add(new Image(getClass().getResource("/img/appicon_Small.png").toExternalForm()));
 
 		primaryStage.setTitle("Log Reader");
 		primaryStage.show();

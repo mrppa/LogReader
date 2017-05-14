@@ -27,6 +27,9 @@
 				<MenuItem fx:id="openFileMnuItem" text="Open"></MenuItem>
 				<MenuItem fx:id="exitFileMnuItem" text="Exit"></MenuItem>
 			</Menu>
+			<Menu text="Help">
+				<MenuItem fx:id="abtMnuItem" text="About"></MenuItem>
+			</Menu>
 		</MenuBar>
 		<ToolBar>
 			<Button fx:id="pageStartBtn" text="Start"></Button>
@@ -37,8 +40,7 @@
 			<Button fx:id="searchBtn" text="Search"></Button>
 			<Separator></Separator>
 			<Button fx:id="copyBtn" text="Copy"></Button>
-			<Hyperlink fx:id="linktoSite" text="https://github.com/mrppa/LogReader"
-				underline="true"></Hyperlink>
+			<Hyperlink fx:id="linktoSite" text="https://github.com/mrppa/LogReader"	underline="true" ></Hyperlink>
 		</ToolBar>
 		<VBox fx:id="textDispArea" styleClass="TextDispArea">
 			<TextFlow fx:id="textDispFlow" ></TextFlow>

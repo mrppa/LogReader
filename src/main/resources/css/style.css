@@ -30,4 +30,11 @@
 }
 
 
+.aboutTopBox{
+	-fx-background-color: #FFFFFF;
+	-fx-padding:20;
+}
 
+.aboutImg{
+	-fx-padding:20;
+}

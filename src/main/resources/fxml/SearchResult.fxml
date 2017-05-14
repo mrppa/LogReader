@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language JavaScript?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ProgressBar?>
+
+<AnchorPane fx:controller="com.mrppa.logreader.ui.controller.SearchController" xmlns:fx="http://javafx.com/fxml" prefHeight="200" prefWidth="400">
+
+	<VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" style="-fx-padding:20;">
+		<children>
+			<Label fx:id="searchInfo" alignment="CENTER_LEFT" cache="true"
+				cacheHint="SCALE" text="SearchResults" textAlignment="LEFT" />
+			<ListView fx:id="searchList" />
+		</children>
+	</VBox>
+	<VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"	AnchorPane.rightAnchor="0.0">
+		<ToolBar>
+			<Label fx:id="searchStatLbl" text=""></Label>
+			<ProgressBar fx:id="searchProgressBar"></ProgressBar>
+		</ToolBar>
+	</VBox>
+</AnchorPane>
