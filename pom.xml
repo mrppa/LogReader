@@ -17,6 +17,9 @@
 		<jcl.slf4j.version>1.7.12</jcl.slf4j.version>
 		<logback.version>1.1.3</logback.version>
 		<miglayout.version>5.0</miglayout.version>
+		<junit.version>4.12</junit.version>
+		<mockito.version>1.9.5</mockito.version>
+		<commonpool.version>2.2</commonpool.version>
 	</properties>
 
 	<dependencies>
@@ -36,10 +39,20 @@
 			<version>${miglayout.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>${commonpool.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${mockito.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

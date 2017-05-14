@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -38,7 +37,6 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -47,7 +45,7 @@ import javafx.stage.WindowEvent;
 public class MainController implements Initializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
-	private static final int NU_OF_REC = 40;
+	public static final int NU_OF_REC = 40;
 	private final Clipboard clipboard = Clipboard.getSystemClipboard();
 
 	@FXML
@@ -72,8 +70,7 @@ public class MainController implements Initializable {
 	private Label sysStatLbl;
 	@FXML
 	private TextFlow textDispFlow;
-	
-	
+
 	private Stage stage;
 
 	private List<Line> lineList;
@@ -82,6 +79,8 @@ public class MainController implements Initializable {
 	private LineReader lineReader;
 
 	private Timer sysStatTimer;
+	
+	private UIData uiData;
 
 	public MenuItem getOpenFileMnuItem() {
 		return openFileMnuItem;
@@ -179,17 +178,39 @@ public class MainController implements Initializable {
 		this.textDispFlow = textDispFlow;
 	}
 
+	public List<Line> getLineList() {
+		return lineList;
+	}
+
+	public void setLineList(List<Line> lineList) {
+		this.lineList = lineList;
+	}
+
+	public LineReader getLineReader() {
+		return lineReader;
+	}
+
+	public void setLineReader(LineReader lineReader) {
+		this.lineReader = lineReader;
+	}
+
+	public UIData getUiData() {
+		return uiData;
+	}
+
+	public void setUiData(UIData uiData) {
+		this.uiData = uiData;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		UIData uiData = new UIData();
-
 		searchBtn.setDisable(true);
 		textDispArea.setDisable(true);
 		copyBtn.setDisable(true);
 		searchTxtField.setDisable(true);
 		pageStartBtn.setDisable(true);
 		pageEndBtn.setDisable(true);
-		
+
 		TimerTask sysStatTimerTask = new TimerTask() {
 			@Override
 			public void run() {
@@ -207,7 +228,6 @@ public class MainController implements Initializable {
 		sysStatTimer = new Timer();
 		sysStatTimer.scheduleAtFixedRate(sysStatTimerTask, 0, 5000);
 	}
-
 
 	/**
 	 * Set the action of each components
@@ -232,8 +252,10 @@ public class MainController implements Initializable {
 				try {
 					MainController.this.lineReader = new LineReader(selectedLogFile.getAbsolutePath(), 1024);
 					MainController.this.lineList = new LinkedList<Line>();
-					MainController.this.loadLinesFromPos(0);
-					MainController.this.refreshText();
+					
+					uiData.loadLinesFromPos(0,MainController.this.lineList,MainController.this.lineReader,MainController.NU_OF_REC );
+					uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
+					
 					MainController.this.textDispArea.setDisable(false);
 					MainController.this.copyBtn.setDisable(false);
 					MainController.this.searchTxtField.setDisable(false);
@@ -255,36 +277,12 @@ public class MainController implements Initializable {
 				if (selectedLogFile != null) {
 					if (event.getDeltaY() > 0) {
 						LOG.debug("SCROLLING UP");
-						if (lineList.size() > 1) {
-							lineList.remove(0);
-							Line lastLine = lineList.get(lineList.size() - 1);
-							try {
-								Line line = lineReader.getNextPosition(lastLine.getEndPos() + 1);
-								if (line != null) {
-									lineList.add(line);
-								}
-
-							} catch (IOException e) {
-								LOG.error("ERROR SCROLLING UP");
-							}
-							refreshText();
-						}
+						uiData.lineMoveUp(MainController.this.lineList, MainController.this.lineReader,MainController.NU_OF_REC);
+						uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
 					} else {
 						LOG.debug("SCROLLING DOWN");
-						Line firstLine = lineList.get(0);
-						try {
-							Line line = lineReader.getPrevPosition(firstLine.getStartPos() - 1);
-							if (line != null) {
-								lineList.add(0, line);
-								if (lineList.size() > lineList.size()) {
-									lineList.remove(lineList.size() - 1);
-								}
-							}
-
-						} catch (IOException e) {
-							LOG.error("ERROR SCROLLING UP");
-						}
-						refreshText();
+						uiData.lineMoveDown(MainController.this.lineList, MainController.this.lineReader,MainController.NU_OF_REC);
+						uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
 					}
 				}
 			}
@@ -294,8 +292,8 @@ public class MainController implements Initializable {
 		this.pageStartBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				MainController.this.loadLinesFromPos(0);
-				MainController.this.refreshText();
+				uiData.loadLinesFromPos(0,MainController.this.lineList,MainController.this.lineReader,MainController.NU_OF_REC );
+				uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
 			}
 		});
 
@@ -303,8 +301,8 @@ public class MainController implements Initializable {
 		this.pageEndBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				MainController.this.loadLinesFromPos(lineReader.getNuOfBytes() - 1);
-				MainController.this.refreshText();
+				uiData.loadLinesFromPos(lineReader.getNuOfBytes() - 1,MainController.this.lineList,MainController.this.lineReader,MainController.NU_OF_REC );
+				uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
 			}
 		});
 
@@ -385,49 +383,6 @@ public class MainController implements Initializable {
 			}
 		});
 
-	}
-
-	/**
-	 * Fill the textfields based on current lines
-	 */
-	private void refreshText() {
-		this.textDispFlow.getChildren().clear();
-		for (int i = 0; i < lineList.size(); i++) {
-			Line line = lineList.get(i);
-			if (line != null) {
-				Text text=new Text();
-				text.setText(line.getContent());
-				this.textDispFlow.getChildren().add(text);
-			}
-		}
-	}
-
-	/**
-	 * Clear and load lines from given absolute position
-	 * 
-	 * @param absolutePos
-	 */
-	protected void loadLinesFromPos(long absolutePos) {
-		try {
-			lineList.clear();
-			Line line = new Line();
-			line = lineReader.getNearestPrevLine(absolutePos);
-			long nextLineStartPos = 0l;
-			if (line != null) {
-				nextLineStartPos = line.getStartPos();
-			}
-			for (int i = 0; i < NU_OF_REC; i++) {
-				line = lineReader.getNextPosition(nextLineStartPos);
-				if (line == null) {
-					break;
-				}
-				nextLineStartPos = line.getEndPos() + 1;
-				lineList.add(line);
-			}
-			refreshText();
-		} catch (IOException e) {
-			LOG.error("FILE READ ERROR", e);
-		}
 	}
 
 	public void finalize() {

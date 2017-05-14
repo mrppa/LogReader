@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mrppa.logreader.reader.LineReader;
 import com.mrppa.logreader.reader.Progress;
+import com.mrppa.logreader.ui.data.UIData;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -115,7 +116,9 @@ public class SearchController implements Initializable {
 			public void handle(MouseEvent event) {
 				Long item = Long.parseLong(searchList.getSelectionModel().getSelectedItem());
 				System.out.println("clicked on " + item);
-				mainController.loadLinesFromPos(item);
+				
+				mainController.getUiData().loadLinesFromPos(item,mainController.getLineList(),mainController.getLineReader(),MainController.NU_OF_REC );
+				mainController.getUiData().refreshText(mainController.getTextDispFlow(), mainController.getLineList());
 			}
 
 		});
@@ -210,15 +213,9 @@ public class SearchController implements Initializable {
 		if(this.progress!=null){
 			progress.setShutDownCommand(true);
 		}
-//		if(this.searchStatThread!=null)
-//		{
-//			this.searchStatThread.stop();
-//		}
-//		if(this.searchThread!=null)
-//		{
-//			this.searchThread.stop();
-//		}
+
 	}
+	
 
 
 }

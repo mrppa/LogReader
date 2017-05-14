@@ -1,3 +1,27 @@
 .TextDispArea {
 	-fx-background-color: #FFFFFF;
 }
+
+.highlightedText {
+	-fx-stroke: #000000
+}
+
+.errorText {
+	-fx-fill: #e00000;
+	-fx-stroke: #e00000;
+}
+
+.warnText {
+	-fx-fill: #890d0d;
+}
+
+.debugText {
+	-fx-fill: #595959;
+}
+
+.traceText {
+	-fx-fill: #c4c0c0;
+}
+
+
+
