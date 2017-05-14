@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.text.TextFlow?>
 
 <AnchorPane fx:controller="com.mrppa.logreader.ui.controller.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="200" prefWidth="400">
 	<VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -38,7 +39,7 @@
 				underline="true"></Hyperlink>
 		</ToolBar>
 		<VBox fx:id="textDispArea" styleClass="TextDispArea">
-
+			<TextFlow fx:id="textDispFlow" ></TextFlow>
 		</VBox>
 	</VBox>
 	<VBox  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">

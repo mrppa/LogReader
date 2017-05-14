@@ -38,6 +38,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -68,10 +70,12 @@ public class MainController implements Initializable {
 	private Hyperlink linktoSite;
 	@FXML
 	private Label sysStatLbl;
-
+	@FXML
+	private TextFlow textDispFlow;
+	
+	
 	private Stage stage;
 
-	private List<TextField> fieldList;
 	private List<Line> lineList;
 
 	private File selectedLogFile;
@@ -167,18 +171,25 @@ public class MainController implements Initializable {
 		this.sysStatLbl = sysStatLbl;
 	}
 
+	public TextFlow getTextDispFlow() {
+		return textDispFlow;
+	}
+
+	public void setTextDispFlow(TextFlow textDispFlow) {
+		this.textDispFlow = textDispFlow;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		UIData uiData = new UIData();
 
-		this.populateTextDispArea();
 		searchBtn.setDisable(true);
 		textDispArea.setDisable(true);
 		copyBtn.setDisable(true);
 		searchTxtField.setDisable(true);
 		pageStartBtn.setDisable(true);
 		pageEndBtn.setDisable(true);
-
+		
 		TimerTask sysStatTimerTask = new TimerTask() {
 			@Override
 			public void run() {
@@ -197,19 +208,6 @@ public class MainController implements Initializable {
 		sysStatTimer.scheduleAtFixedRate(sysStatTimerTask, 0, 5000);
 	}
 
-	/**
-	 * Populate dynamic text fields
-	 */
-	private void populateTextDispArea() {
-		this.fieldList = new ArrayList<>();
-		for (int i = 0; i < NU_OF_REC; i++) {
-			TextField tf = new TextField("");
-			tf.setEditable(false);
-			tf.getStyleClass().add("logcontent_textbox");
-			this.textDispArea.getChildren().add(tf);
-			fieldList.add(tf);
-		}
-	}
 
 	/**
 	 * Set the action of each components
@@ -278,7 +276,7 @@ public class MainController implements Initializable {
 							Line line = lineReader.getPrevPosition(firstLine.getStartPos() - 1);
 							if (line != null) {
 								lineList.add(0, line);
-								if (lineList.size() > fieldList.size()) {
+								if (lineList.size() > lineList.size()) {
 									lineList.remove(lineList.size() - 1);
 								}
 							}
@@ -393,15 +391,13 @@ public class MainController implements Initializable {
 	 * Fill the textfields based on current lines
 	 */
 	private void refreshText() {
-		for (int i = 0; i < fieldList.size(); i++) {
-			TextField tf = fieldList.get(i);
-			if (i >= lineList.size()) {
-				tf.setText("");
-			} else {
-				Line line = lineList.get(i);
-				if (line != null) {
-					tf.setText(line.getContent());
-				}
+		this.textDispFlow.getChildren().clear();
+		for (int i = 0; i < lineList.size(); i++) {
+			Line line = lineList.get(i);
+			if (line != null) {
+				Text text=new Text();
+				text.setText(line.getContent());
+				this.textDispFlow.getChildren().add(text);
 			}
 		}
 	}
