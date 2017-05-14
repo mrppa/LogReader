@@ -18,6 +18,7 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.Slider?>
 
 <AnchorPane fx:controller="com.mrppa.logreader.ui.controller.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="200" prefWidth="400">
 	<VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -29,6 +30,7 @@
 		</MenuBar>
 		<ToolBar>
 			<Button fx:id="pageStartBtn" text="Start"></Button>
+			<Slider fx:id="navSlider"></Slider>
 			<Button fx:id="pageEndBtn" text="End"></Button>
 			<Separator></Separator>
 			<TextField fx:id="searchTxtField"></TextField>

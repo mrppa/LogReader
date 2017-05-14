@@ -118,7 +118,7 @@ public class SearchController implements Initializable {
 				System.out.println("clicked on " + item);
 				
 				mainController.getUiData().loadLinesFromPos(item,mainController.getLineList(),mainController.getLineReader(),MainController.NU_OF_REC );
-				mainController.getUiData().refreshText(mainController.getTextDispFlow(), mainController.getLineList());
+				mainController.getUiData().refreshText(mainController.getTextDispFlow(), mainController.getLineList(), mainController.getNavSlider());
 			}
 
 		});

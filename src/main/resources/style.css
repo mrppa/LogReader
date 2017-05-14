@@ -6,6 +6,12 @@
 	-fx-stroke: #000000
 }
 
+.fatalText {
+	-fx-fill: #e00000;
+	-fx-stroke: #e00000;
+	-fx-stroke-width: 2;
+}
+
 .errorText {
 	-fx-fill: #e00000;
 	-fx-stroke: #e00000;

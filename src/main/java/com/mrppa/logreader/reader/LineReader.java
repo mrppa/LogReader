@@ -157,7 +157,7 @@ public class LineReader {
 	 * @throws IOException
 	 */
 	protected Byte getDataByAbsolutePOS(long absolutePosition) throws IOException {
-		LOG.info("GET DATA BY ABSOLUTE POSITION\t:" + absolutePosition);
+		LOG.debug("GET DATA BY ABSOLUTE POSITION\t:" + absolutePosition);
 		if (absolutePosition < 0) {
 			return null;
 		}

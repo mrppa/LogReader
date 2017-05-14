@@ -14,6 +14,8 @@ import com.mrppa.logreader.reader.LineReader;
 import com.mrppa.logreader.ui.controller.MainController;
 
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -52,20 +54,26 @@ public class UIData {
 	 * @param lineList
 	 * @throws Exception
 	 */
-	public synchronized void refreshText(TextFlow textDispFlow, List<Line> lineList) {
+	public synchronized void refreshText(TextFlow textDispFlow, List<Line> lineList,Slider navSlider) {
 
 		for (Node node : textDispFlow.getChildren()) {
 			Text text = (Text) node;
 			this.textPool.returnObject(text);
 		}
+		double sliderPos=0d;
 		textDispFlow.getChildren().clear();
 		LOG.debug("SIZE\t-" + lineList.size());
 		for (int i = 0; i < lineList.size(); i++) {
 			Line line = lineList.get(i);
 			if (line != null) {
 				this.refreshTextLine(textDispFlow, line);
+				if(i==0){
+					sliderPos=line.getStartPos();
+				}
 			}
 		}
+		navSlider.setValue(sliderPos);
+		navSlider.setTooltip(new Tooltip((long)sliderPos+" / "+(long)navSlider.getMax()));
 	}
 	
 	
@@ -74,7 +82,9 @@ public class UIData {
 		List<String> lineTextList=new ArrayList<>();
 		String lineCSSClass="";
 		
-		if (line.getContent().toUpperCase().contains("ERROR")) {
+		if (line.getContent().toUpperCase().contains("FATAL")) {
+			lineCSSClass = "fatalText";
+		}else if (line.getContent().toUpperCase().contains("ERROR")) {
 			lineCSSClass = "errorText";
 		} else if (line.getContent().toUpperCase().contains("WARN")) {
 			lineCSSClass = "warnText";

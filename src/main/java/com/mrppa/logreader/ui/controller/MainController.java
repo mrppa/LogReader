@@ -31,9 +31,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -45,7 +47,7 @@ import javafx.stage.WindowEvent;
 public class MainController implements Initializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
-	public static final int NU_OF_REC = 40;
+	public static final int NU_OF_REC = 60;
 	private final Clipboard clipboard = Clipboard.getSystemClipboard();
 
 	@FXML
@@ -70,6 +72,8 @@ public class MainController implements Initializable {
 	private Label sysStatLbl;
 	@FXML
 	private TextFlow textDispFlow;
+	@FXML
+	private Slider navSlider;
 
 	private Stage stage;
 
@@ -79,7 +83,7 @@ public class MainController implements Initializable {
 	private LineReader lineReader;
 
 	private Timer sysStatTimer;
-	
+
 	private UIData uiData;
 
 	public MenuItem getOpenFileMnuItem() {
@@ -202,6 +206,14 @@ public class MainController implements Initializable {
 		this.uiData = uiData;
 	}
 
+	public Slider getNavSlider() {
+		return navSlider;
+	}
+
+	public void setNavSlider(Slider navSlider) {
+		this.navSlider = navSlider;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		searchBtn.setDisable(true);
@@ -210,6 +222,7 @@ public class MainController implements Initializable {
 		searchTxtField.setDisable(true);
 		pageStartBtn.setDisable(true);
 		pageEndBtn.setDisable(true);
+		navSlider.setDisable(true);
 
 		TimerTask sysStatTimerTask = new TimerTask() {
 			@Override
@@ -252,16 +265,20 @@ public class MainController implements Initializable {
 				try {
 					MainController.this.lineReader = new LineReader(selectedLogFile.getAbsolutePath(), 1024);
 					MainController.this.lineList = new LinkedList<Line>();
-					
-					uiData.loadLinesFromPos(0,MainController.this.lineList,MainController.this.lineReader,MainController.NU_OF_REC );
-					uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
-					
+
+					uiData.loadLinesFromPos(0, MainController.this.lineList, MainController.this.lineReader,
+							MainController.NU_OF_REC);
+					uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList, MainController.this.navSlider);
+
 					MainController.this.textDispArea.setDisable(false);
 					MainController.this.copyBtn.setDisable(false);
 					MainController.this.searchTxtField.setDisable(false);
 					MainController.this.pageStartBtn.setDisable(false);
 					MainController.this.pageEndBtn.setDisable(false);
+					MainController.this.navSlider.setDisable(false);
 					MainController.this.searchTxtField.setText("");
+					MainController.this.navSlider.setMin(0d);
+					MainController.this.navSlider.setMax(MainController.this.lineReader.getNuOfBytes());
 
 				} catch (IOException e) {
 					LOG.error("FILE READ ERROR", e);
@@ -277,12 +294,14 @@ public class MainController implements Initializable {
 				if (selectedLogFile != null) {
 					if (event.getDeltaY() > 0) {
 						LOG.debug("SCROLLING UP");
-						uiData.lineMoveUp(MainController.this.lineList, MainController.this.lineReader,MainController.NU_OF_REC);
-						uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
+						uiData.lineMoveUp(MainController.this.lineList, MainController.this.lineReader,
+								MainController.NU_OF_REC);
+						uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList, MainController.this.navSlider);
 					} else {
 						LOG.debug("SCROLLING DOWN");
-						uiData.lineMoveDown(MainController.this.lineList, MainController.this.lineReader,MainController.NU_OF_REC);
-						uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
+						uiData.lineMoveDown(MainController.this.lineList, MainController.this.lineReader,
+								MainController.NU_OF_REC);
+						uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList, MainController.this.navSlider);
 					}
 				}
 			}
@@ -292,8 +311,8 @@ public class MainController implements Initializable {
 		this.pageStartBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				uiData.loadLinesFromPos(0,MainController.this.lineList,MainController.this.lineReader,MainController.NU_OF_REC );
-				uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
+				uiData.loadLinesFromPos(0, MainController.this.lineList, MainController.this.lineReader,MainController.NU_OF_REC);
+				uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList, MainController.this.navSlider);
 			}
 		});
 
@@ -301,8 +320,9 @@ public class MainController implements Initializable {
 		this.pageEndBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				uiData.loadLinesFromPos(lineReader.getNuOfBytes() - 1,MainController.this.lineList,MainController.this.lineReader,MainController.NU_OF_REC );
-				uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList);
+				uiData.loadLinesFromPos(lineReader.getNuOfBytes() - 1, MainController.this.lineList,
+						MainController.this.lineReader, MainController.NU_OF_REC);
+				uiData.refreshText(MainController.this.textDispFlow, MainController.this.lineList, MainController.this.navSlider);
 			}
 		});
 
@@ -379,6 +399,21 @@ public class MainController implements Initializable {
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				}
+
+			}
+		});
+		
+		//Slider Change
+		this.navSlider.setOnMouseReleased(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				long selPos =(long) MainController.this.getNavSlider().getValue();
+				LOG.info("POS CHANGED\t" + selPos);
+				uiData.loadLinesFromPos(selPos, MainController.this.getLineList(), MainController.this.getLineReader(),
+						MainController.NU_OF_REC);
+				uiData.refreshText(MainController.this.getTextDispFlow(), MainController.this.getLineList(),
+						MainController.this.getNavSlider());
 
 			}
 		});
