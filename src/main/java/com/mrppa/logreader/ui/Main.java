@@ -11,11 +11,15 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+/**
+ * 
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class Main extends Application {
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	private MainController mainController ;

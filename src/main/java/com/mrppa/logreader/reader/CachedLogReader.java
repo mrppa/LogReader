@@ -11,10 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is wrapped object for LogReader.with cached functionality for
+ * This is wrapped object for LogReader with cached functionality for
  * performance
- * 
- * @author Pasindu
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
  *
  */
 public class CachedLogReader extends LogReader {

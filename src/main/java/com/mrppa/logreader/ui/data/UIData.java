@@ -16,10 +16,13 @@ import com.mrppa.logreader.ui.controller.MainController;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tooltip;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-
+/**
+ * 
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class UIData {
 	private static final Logger LOG = LoggerFactory.getLogger(UIData.class);
 

@@ -1,5 +1,10 @@
 package com.mrppa.logreader.reader;
 
+/**
+ * Progress object
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class Progress {
 	private long value;
 	private long minVal;

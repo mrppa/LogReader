@@ -1,0 +1,1 @@
+java -jar LogReader.jar -Xms 16M -Xmx 256M

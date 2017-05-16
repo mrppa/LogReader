@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Read Logs line by line
  * 
- * @author Pasindu
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
  *
  */
 public class LineReader {

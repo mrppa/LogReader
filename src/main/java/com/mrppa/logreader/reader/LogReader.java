@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Random accesss log file reader. Not to use directly
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class LogReader {
 	private static final Logger LOG = LoggerFactory.getLogger(LogReader.class);
 

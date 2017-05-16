@@ -6,9 +6,12 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import javafx.scene.text.Text;
-
+/**
+ * 
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class TextPoolFactory extends BasePooledObjectFactory<Text> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TextPoolFactory.class);

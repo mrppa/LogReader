@@ -1,5 +1,10 @@
 package com.mrppa.logreader.reader;
 
+/**
+ * Line Object
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class Line {
 	private String content;
 	private long startPos;

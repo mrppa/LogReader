@@ -4,11 +4,10 @@
 
 	<groupId>com.mrppa</groupId>
 	<artifactId>LogReader</artifactId>
-	<version>${LogReader.version}</version>
+	<version>0.0.5</version>
 	<packaging>jar</packaging>
-
 	<name>LogReader</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/mrppa/LogReader</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +20,19 @@
 		<mockito.version>1.9.5</mockito.version>
 		<commonpool.version>2.2</commonpool.version>
 	</properties>
+
+	<developers>
+		<developer>
+			<id>Pasindu</id>
+			<name>Pasindu Ariyarathna</name>
+			<email>Pasindu@mrppa.com</email>
+			<url>http://mrppa.com/</url>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
 
 	<dependencies>
 		<dependency>
@@ -56,34 +68,21 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>LogReader</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
 			</resource>
 		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>
-								${project.build.directory}/libs
-							</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
+					<excludes>
+						<exclude>libs/*</exclude>
+					</excludes>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
@@ -94,6 +93,25 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

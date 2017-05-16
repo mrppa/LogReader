@@ -10,8 +10,6 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mrppa.logreader.reader.LineReader;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,7 +18,11 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
+/**
+ * 
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class AboutController implements Initializable {
 	private static final Logger LOG = LoggerFactory.getLogger(AboutController.class);
 

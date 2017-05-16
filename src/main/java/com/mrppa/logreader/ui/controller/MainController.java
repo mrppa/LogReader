@@ -27,8 +27,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -46,7 +44,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-
+/**
+ * 
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class MainController implements Initializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
@@ -399,6 +401,7 @@ public class MainController implements Initializable {
 				searchResultStage.initStyle(StageStyle.UTILITY);
 				searchResultStage.show();
 				searchResultStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					@Override
 					public void handle(WindowEvent we) {
 						LOG.info("SEARCH WINDOW CLOSING");
 						searchController.finalize();
@@ -456,6 +459,7 @@ public class MainController implements Initializable {
 
 	}
 
+	@Override
 	public void finalize() {
 		LOG.info("FINALIZING MAIN CONTROLLER");
 		if (this.sysStatTimer != null) {

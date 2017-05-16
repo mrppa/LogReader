@@ -7,15 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mrppa.logreader.reader.LineReader;
 import com.mrppa.logreader.reader.Progress;
-import com.mrppa.logreader.ui.data.UIData;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -25,7 +22,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.MouseEvent;
-
+/**
+ * 
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
+ *
+ */
 public class SearchController implements Initializable {
 	private static final Logger LOG = LoggerFactory.getLogger(SearchController.class);
 
@@ -207,6 +208,7 @@ public class SearchController implements Initializable {
 		searchStatThread.start();
 	}
 	
+	@Override
 	public void finalize(){
 		LOG.info("FINALIZING SEARCH CONTROLLER");
 		shutdownSearchOpps=true;

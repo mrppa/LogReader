@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * This utility class is for testing purposes only
  * 
- * @author Pasindu
+ * @author Pasindu Ariyarathna (pasindu@mrppa.com)
  *
  */
 public class LogFileGenerator {
