@@ -4,7 +4,7 @@
 
 	<groupId>com.mrppa</groupId>
 	<artifactId>LogReader</artifactId>
-	<version>0.0.5</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<name>LogReader</name>
 	<url>https://github.com/mrppa/LogReader</url>
