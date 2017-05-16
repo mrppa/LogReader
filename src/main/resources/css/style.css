@@ -1,5 +1,6 @@
 .TextDispArea {
 	-fx-background-color: #FFFFFF;
+	-fx-padding:0 5 0 5;
 }
 
 .highlightedText {
@@ -9,12 +10,12 @@
 .fatalText {
 	-fx-fill: #e00000;
 	-fx-stroke: #e00000;
-	-fx-stroke-width: 2;
+	-fx-stroke-width: 1;
 }
 
 .errorText {
-	-fx-fill: #e00000;
-	-fx-stroke: #e00000;
+	-fx-fill: #ff0000;
+	-fx-stroke: #ff0000;
 }
 
 .warnText {

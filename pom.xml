@@ -99,6 +99,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
+					<finalName>${pom.artifactId}-${pom.version}</finalName>
 					<descriptors>
 						<descriptor>src/assembly/assembly.xml</descriptor>
 					</descriptors>

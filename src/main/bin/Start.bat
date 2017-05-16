@@ -1,1 +1,1 @@
-javaw -jar LogReader.jar -Xms 16M -Xmx 256M
+start javaw -jar LogReader.jar -Xms 16M -Xmx 256M
